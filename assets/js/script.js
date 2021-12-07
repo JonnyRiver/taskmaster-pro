@@ -43,10 +43,8 @@ var loadTasks = function() {
 
 var saveTasks = function() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
+
 };
-
-
-
 
 // modal was triggered
 $("#task-form-modal").on("show.bs.modal", function() {
@@ -81,6 +79,79 @@ $("#task-form-modal .btn-primary").click(function() {
     saveTasks();
   }
 });
+
+    $(".list-group").on("click", "p", function() {
+      var text = $(this)
+      .text()
+      .trim();
+    
+      var textInput = $("<textarea>").addClass("form-control").val(text);
+      $(this).replaceWith(textInput);
+
+      textInput.trigger("focus");
+    });
+    
+    $(".list-group").on("blur", "textarea", function() {
+      var text = $(this).val();
+
+      var status = $(this)
+      .closest(".list-group")
+      .attr("id")
+      .replace("list-", "");
+    var index = $(this)
+      .closest(".list-group-item")
+      .index();
+
+      tasks[status][index].text = text;
+      saveTasks();
+
+      var taskP = $("<p>")
+        .addClass("m-1")
+        .text(text);
+
+        $(this).replaceWith(taskP);
+    });
+
+    // due date was clicked
+$(".list-group").on("click", "span", function() {
+  // get current text
+  var date = $(this)
+    .text()
+    .trim();
+
+  // create new input element
+  var dateInput = $("<input>")
+    .attr("type", "text")
+    .addClass("form-control")
+    .val(date);
+  $(this).replaceWith(dateInput);
+
+  // automatically bring up the calendar
+  dateInput.trigger("focus");
+});
+
+// value of due date was changed
+$(".list-group").on("blur", "input[type='text']", function() {
+  var date = $(this).val();
+
+  var status = $(this)
+    .closest(".list-group")
+    .attr("id")
+    .replace("list-", "");
+  var index = $(this)
+    .closest(".list-group-item")
+    .index();
+
+  
+  tasks[status][index].date = date;
+  saveTasks();
+
+  var taskSpan = $("<span>")
+    .addClass("badge badge-primary badge-pill")
+    .text(date);
+    $(this).replaceWith(taskSpan);
+});
+
 
 // remove all tasks
 $("#remove-tasks").on("click", function() {
